@@ -216,6 +216,20 @@ class PluginUiFlowTests(unittest.TestCase):
 		self.module = pluginModule
 		self.plugin = pluginModule.GlobalPlugin()
 
+	def test_recovery_progress_speaks_without_replacing_last_result(self) -> None:
+		from globalPlugins.whatsappWebPlusCompanion.models import OperationResult
+
+		previous = OperationResult(True, "attached", "active", {})
+		self.plugin.lastResult = previous
+		progress = OperationResult(True, "cdp.recovering", "cdp.recovering", {})
+		with mock.patch.object(self.module.commandFeedback, "message") as feedback:
+			self.assertTrue(self.plugin._reportIfCurrent(self.plugin._generation, progress))
+			feedback.assert_called_once_with("Restoring the WhatsApp Companion connection. Please wait.")
+			self.assertIs(self.plugin.lastResult, previous)
+			feedback.reset_mock()
+			self.assertFalse(self.plugin._reportIfCurrent(self.plugin._generation - 1, progress))
+			feedback.assert_not_called()
+
 	def test_process_probe_failures_never_offer_permission_repair(self) -> None:
 		from globalPlugins.whatsappWebPlusCompanion.models import LoaderError
 

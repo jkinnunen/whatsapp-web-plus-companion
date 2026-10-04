@@ -570,3 +570,14 @@ msgstr "Pesan disalin."
 
 msgid "Could not copy the message."
 msgstr "Pesan tidak dapat disalin."
+
+msgid "Fix registry recovery cleanup and stop queued braille messages when disabled. Add release version and package integrity checks. Includes WhatsApp Web Plus 2.6.86. Requires NVDA 2025.1 or later."
+msgstr "Memperbaiki pembersihan proses pemulihan registry dan menghentikan antrean pesan braille saat dinonaktifkan. Menambahkan pemeriksaan versi rilis dan integritas paket. Menyertakan WhatsApp Web Plus 2.6.86. Memerlukan NVDA 2025.1 atau lebih baru."
+
+#. Progress while reconnecting.
+msgid "Restoring the WhatsApp Companion connection. Please wait."
+msgstr "Sedang memulihkan koneksi WhatsApp Companion. Mohon tunggu."
+
+#. Release summary for WhatsApp Companion 2026.10.04.
+msgid "Improve connection recovery on busy systems, announce recovery progress, and preserve cancellation and timeout diagnostics. Requires NVDA 2025.1 or later."
+msgstr "Meningkatkan pemulihan koneksi saat sistem sibuk, mengumumkan proses pemulihan, serta mempertahankan pembatalan dan diagnostik batas waktu. Memerlukan NVDA 2025.1 atau yang lebih baru."

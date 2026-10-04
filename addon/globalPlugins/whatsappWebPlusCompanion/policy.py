@@ -42,7 +42,9 @@ CONNECT_DEADLINE = 5.0
 REQUEST_DEADLINE = 5.0
 BUNDLE_HEALTH_DEADLINE = 15.0
 RECONNECT_DELAYS = (0.25, 0.5, 1.0)
-RECONNECT_DEADLINE = 20.0
+# Process lookup and repeated endpoint identity checks share this bounded budget.
+# A single identity probe can take 30 seconds on a busy machine.
+RECONNECT_DEADLINE = 90.0
 CANCEL_INTERVAL = 0.25
 SOCKET_CLOSE_DEADLINE = 2.0
 MAX_HTTP_BYTES = 1024 * 1024

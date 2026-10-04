@@ -987,11 +987,12 @@ def removeRegistration(session: CdpSession, identifier: str) -> None:
 
 
 T = TypeVar("T")
+DiscoveryT = TypeVar("DiscoveryT")
 
 
 def reconnect(
-	discover: Callable[[], Target],
-	connect: Callable[[Target], T],
+	discover: Callable[[], DiscoveryT],
+	connect: Callable[[DiscoveryT], T],
 	cancelEvent: threading.Event,
 	deadline: float | None = None,
 ) -> T:
@@ -1001,7 +1002,8 @@ def reconnect(
 		else time.monotonic() + RECONNECT_DEADLINE
 	)
 	lastError: LoaderError | None = None
-	for index, delay in enumerate(RECONNECT_DELAYS):
+	index = 0
+	while time.monotonic() < end:
 		if time.monotonic() >= end:
 			break
 		if cancelEvent.is_set():
@@ -1011,16 +1013,27 @@ def reconnect(
 			if cancelEvent.is_set():
 				raise LoaderError("operation.cancelled")
 			if time.monotonic() >= end:
+				lastError = LoaderError("operation.timeout", "stage=reconnect.discovery")
 				break
 			return connect(target)
 		except LoaderError as error:
 			if error.code == "operation.cancelled":
 				raise
 			lastError = error
-		if index < len(RECONNECT_DELAYS) - 1:
-			remaining = end - time.monotonic()
-			if remaining <= delay:
-				break
-			if cancelEvent.wait(delay):
-				raise LoaderError("operation.cancelled")
-	raise LoaderError("cdp.reconnect", lastError.code if lastError else "noTarget")
+		delay = RECONNECT_DELAYS[min(index, len(RECONNECT_DELAYS) - 1)]
+		index += 1
+		remaining = end - time.monotonic()
+		if remaining <= 0:
+			break
+		if cancelEvent.wait(min(delay, remaining)):
+			raise LoaderError("operation.cancelled")
+	# Cancellation may arrive as a slow probe exhausts the deadline, skipping
+	# the next iteration/wait. Preserve cancellation instead of reporting failure.
+	if cancelEvent.is_set():
+		raise LoaderError("operation.cancelled")
+	detail = "noTarget"
+	if lastError is not None:
+		detail = lastError.code
+		if lastError.safeDetail:
+			detail += ": " + lastError.safeDetail
+	raise LoaderError("cdp.reconnect", detail)

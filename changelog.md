@@ -1,5 +1,15 @@
 # WhatsApp Companion changelog
 
+## 2026.10.04
+
+### Connection recovery
+
+- Retry connection recovery for up to 90 seconds on busy systems, instead of stopping after three attempts within 20 seconds.
+- Retry temporary PowerShell failures while checking whether WhatsApp is still running, using the same overall recovery deadline. Treat WhatsApp as closed only after a successful check returns no running processes.
+- Announce recovery progress once when retrying a failed process check or reconnecting to a running app. Preserve the last completed operation result and keep normal app closure quiet.
+- Recognize cancellation even when it coincides with a failed probe reaching its deadline.
+- Preserve underlying PowerShell stage and timeout details in reconnect logs. Identify discovery that completes after the deadline as a timeout instead of reporting that no target was found.
+
 ## 2026.09.25
 
 ### Reliability fixes

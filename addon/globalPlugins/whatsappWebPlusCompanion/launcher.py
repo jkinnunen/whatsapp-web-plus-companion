@@ -591,14 +591,41 @@ def launchOperation(
 					raise LoaderError("operation.cancelled")
 				io = _OperationIO(cancelEvent, registerCloser, time.monotonic() + RECONNECT_DEADLINE)
 				validator = _endpointValidator(port, package, io)
-				if not findRunningPackageProcesses(package, runner=io.runner):
+				recoveryReported = False
+
+				def reportRecovery() -> None:
+					nonlocal recoveryReported
+					if recoveryReported or cancelEvent.is_set():
+						return
+					recoveryReported = True
+					setState(OperationState.RECONNECTING)
+					reportObserver(OperationResult(True, "cdp.recovering", "cdp.recovering", {}))
+
+				def discoverProcesses():
+					try:
+						return findRunningPackageProcesses(package, runner=io.runner)
+					except LoaderError as probeError:
+						if probeError.code != "operation.cancelled":
+							reportRecovery()
+						raise
+
+				# Process inventory can time out on a busy machine too. Retry it
+				# within the same budget as endpoint recovery; only a successful
+				# empty inventory means that WhatsApp has actually closed.
+				packagePids = reconnect(
+					discoverProcesses,
+					lambda pids: pids,
+					cancelEvent,
+					deadline=io.end,
+				)
+				if not packagePids:
 					return OperationResult(
 						True,
 						"package.closed",
 						"package.closed",
 						{"channel": channel.value},
 					)
-				setState(OperationState.RECONNECTING)
+				reportRecovery()
 				session.close()
 				unregisterSession()
 
