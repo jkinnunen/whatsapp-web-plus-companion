@@ -12,11 +12,11 @@ addon_info = AddonInfo(
 	addon_description=_(
 		"WhatsApp Companion makes Microsoft Store WhatsApp Stable and Beta easier to use with NVDA. It brings WhatsApp Web Plus features to the desktop app, with keyboard navigation, message reading, and call controls with customizable labels.",
 	),
-	addon_version="2026.09.25",
+	addon_version="2026.10.04",
 	addon_changelog=_(
-		"Fix registry recovery cleanup and stop queued braille messages when disabled. Add release version and package integrity checks. Includes WhatsApp Web Plus 2.6.84. Requires NVDA 2025.1 or later.",
+		"Improve connection recovery on busy systems, announce recovery progress, and preserve cancellation and timeout diagnostics. Requires NVDA 2025.1 or later.",
 	),
-	addon_author="Muhammad",
+	addon_author="Muhammad <muha.aku@gmail.com>",
 	addon_url="https://github.com/muhammadGagah/whatsapp-web-plus-companion",
 	addon_sourceURL="https://github.com/muhammadGagah/whatsapp-web-plus-companion",
 	addon_docFileName="readme.html",

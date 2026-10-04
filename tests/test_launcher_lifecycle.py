@@ -352,6 +352,15 @@ class LauncherLifecycleTests(unittest.TestCase):
 		self.assertEqual(cancelEvent.waits, [launcher._ANNOUNCEMENT_POLL_INTERVAL] * 2)
 
 	def test_normal_package_exit_finishes_without_reconnect(self) -> None:
+		self._check_package_exit_after_inventory_failures(())
+
+	def test_process_inventory_timeout_is_retried_before_detecting_package_exit(self) -> None:
+		self._check_package_exit_after_inventory_failures(
+			(LoaderError("powershell.failed", "timeout;stage=package.processes"),) * 2,
+		)
+
+	def _check_package_exit_after_inventory_failures(self, failures: tuple) -> None:
+		reports = []
 		lease = MagicMock()
 		lease.owned = False
 
@@ -371,7 +380,11 @@ class LauncherLifecycleTests(unittest.TestCase):
 			patch.object(launcher, "checkPreflight"),
 			patch.object(launcher, "_recoverPendingRegistryState"),
 			patch.object(launcher, "resolvePackage", return_value=MagicMock()),
-			patch.object(launcher, "findRunningPackageProcesses", side_effect=[(), (41,), ()]),
+			patch.object(
+				launcher,
+				"findRunningPackageProcesses",
+				side_effect=[(), (41,), *failures, ()],
+			) as processes,
 			patch.object(launcher, "reserveLoopbackPort", return_value=12345),
 			patch.object(launcher, "RegistryLease", return_value=lease),
 			patch.object(launcher, "activateAumid"),
@@ -393,14 +406,21 @@ class LauncherLifecycleTests(unittest.TestCase):
 				"_forwardCompanionAnnouncements",
 				side_effect=LoaderError("cdp.closed"),
 			),
-			patch.object(launcher, "reconnect") as reconnect,
+			patch.object(launcher, "_discoverTarget") as discover,
 		):
-			result = launcher.launchOperation(Channel.STABLE, _CancelEvent(), states.append)
+			result = launcher.launchOperation(
+				Channel.STABLE,
+				_CancelEvent(),
+				states.append,
+				reportObserver=reports.append,
+			)
 
 		self.assertTrue(result.ok)
 		self.assertEqual(result.messageKey, "package.closed")
-		self.assertNotIn(OperationState.RECONNECTING, states)
-		reconnect.assert_not_called()
+		self.assertEqual(states.count(OperationState.RECONNECTING), 1 if failures else 0)
+		self.assertEqual([report.messageKey for report in reports], ["cdp.recovering"] if failures else [])
+		discover.assert_not_called()
+		self.assertEqual(processes.call_count, 3 + len(failures))
 		session.close.assert_called_once()
 
 	def test_reconnect_keeps_the_discovered_target_paired_with_its_session(self) -> None:
@@ -415,10 +435,6 @@ class LauncherLifecycleTests(unittest.TestCase):
 		initialUnregister = MagicMock()
 		replacementUnregister = MagicMock()
 
-		def reconnectOnce(_discover, connect, _cancelEvent, **kwargs):
-			self.assertIn("deadline", kwargs)
-			return connect(replacement)
-
 		with (
 			patch.object(launcher, "buildSecurityProbe", return_value=MagicMock()),
 			patch.object(launcher, "checkPreflight"),
@@ -427,7 +443,13 @@ class LauncherLifecycleTests(unittest.TestCase):
 			patch.object(
 				launcher,
 				"findRunningPackageProcesses",
-				side_effect=[(), (41,), (41,), ()],
+				side_effect=[
+					(),
+					(41,),
+					LoaderError("powershell.failed", "timeout;stage=package.processes"),
+					(41,),
+					(),
+				],
 			),
 			patch.object(launcher, "_TARGET_HEALTH_INTERVAL", 0.0),
 			patch.object(launcher, "reserveLoopbackPort", return_value=12345),
@@ -457,12 +479,13 @@ class LauncherLifecycleTests(unittest.TestCase):
 				"_forwardCompanionAnnouncements",
 				side_effect=[None, LoaderError("cdp.closed")],
 			),
-			patch.object(launcher, "reconnect", side_effect=reconnectOnce),
 		):
 			result = launcher.launchOperation(Channel.STABLE, _CancelEvent(), lambda _state: None)
 
 		self.assertEqual(result.messageKey, "package.closed")
-		discover.assert_called_once_with(12345, io=ANY)
+		self.assertEqual(discover.call_count, 2)
+		self.assertEqual(discover.call_args_list[0].args, (12345,))
+		self.assertEqual(discover.call_args_list[0].kwargs, {"io": ANY})
 		initialSession.close.assert_called_once_with()
 		initialUnregister.assert_called_once_with()
 		replacementSession.close.assert_called_once_with()

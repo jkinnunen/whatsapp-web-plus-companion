@@ -436,6 +436,11 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			self.lastResult = result
 			self._resetCompanionDeliveryState()
 			return True
+		if result.messageKey == "cdp.recovering":
+			# Progress must not replace the last completed operation result.
+			# Translators: Spoken while retrying a temporarily unavailable connection.
+			commandFeedback.message(_("Restoring the WhatsApp Companion connection. Please wait."))
+			return True
 		self._report(result)
 		return True
 

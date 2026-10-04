@@ -570,3 +570,14 @@ msgstr "Message copied."
 
 msgid "Could not copy the message."
 msgstr "Could not copy the message."
+
+msgid "Fix registry recovery cleanup and stop queued braille messages when disabled. Add release version and package integrity checks. Includes WhatsApp Web Plus 2.6.86. Requires NVDA 2025.1 or later."
+msgstr "Fix registry recovery cleanup and stop queued braille messages when disabled. Add release version and package integrity checks. Includes WhatsApp Web Plus 2.6.86. Requires NVDA 2025.1 or later."
+
+#. Progress while reconnecting.
+msgid "Restoring the WhatsApp Companion connection. Please wait."
+msgstr "Restoring the WhatsApp Companion connection. Please wait."
+
+#. Release summary for WhatsApp Companion 2026.10.04.
+msgid "Improve connection recovery on busy systems, announce recovery progress, and preserve cancellation and timeout diagnostics. Requires NVDA 2025.1 or later."
+msgstr "Improve connection recovery on busy systems, announce recovery progress, and preserve cancellation and timeout diagnostics. Requires NVDA 2025.1 or later."

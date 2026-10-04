@@ -7,7 +7,7 @@ name = "whatsapp-web-plus-companion"
 dynamic = ["version"]
 description = "NVDA companion add-on for Microsoft Store WhatsApp Stable and Beta"
 maintainers = [
-	{name = "Muhammad Gagah"},
+	{name = "Muhammad"},
 ]
 requires-python = ">=3.11,<3.14"
 classifiers = [
