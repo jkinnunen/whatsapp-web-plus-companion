@@ -21,6 +21,15 @@ addonHandler.initTranslation()
 class AppModule(_WhatsAppBase):
 	scriptCategory = _("WhatsApp Companion")
 
+	def chooseNVDAObjectOverlayClasses(self, obj, clsList):
+		parentSelector = getattr(super(), "chooseNVDAObjectOverlayClasses", None)
+		if parentSelector is not None:
+			parentSelector(obj, clsList)
+		from .wwpMessageReview import MessageReview, isReviewTarget
+
+		if isReviewTarget(obj, clsList) and MessageReview not in clsList:
+			clsList.insert(0, MessageReview)
+
 	@script(description=_("Answer native WhatsApp call"), gesture="kb:control+alt+a", speakOnDemand=True)
 	def script_answerNativeCall(self, gesture):
 		runtime.performCallAction(CallAction.ANSWER, gesture)

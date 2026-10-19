@@ -578,6 +578,12 @@ msgstr "Memperbaiki pembersihan proses pemulihan registry dan menghentikan antre
 msgid "Restoring the WhatsApp Companion connection. Please wait."
 msgstr "Sedang memulihkan koneksi WhatsApp Companion. Mohon tunggu."
 
-#. Release summary for WhatsApp Companion 2026.10.04.
-msgid "Improve connection recovery on busy systems, announce recovery progress, and preserve cancellation and timeout diagnostics. Requires NVDA 2025.1 or later."
-msgstr "Meningkatkan pemulihan koneksi saat sistem sibuk, mengumumkan proses pemulihan, serta mempertahankan pembatalan dan diagnostik batas waktu. Memerlukan NVDA 2025.1 atau yang lebih baru."
+msgid "The WhatsApp Companion connection has been restored."
+msgstr "Koneksi WhatsApp Companion berhasil dipulihkan."
+
+msgid "The WhatsApp Companion connection could not be restored. Close WhatsApp, then launch it again."
+msgstr "Koneksi WhatsApp Companion tidak dapat dipulihkan. Tutup WhatsApp, lalu luncurkan kembali."
+
+#. Release summary for WhatsApp Companion 2026.10.19.
+msgid "Add sticker descriptions with configurable AI providers, improve object review, and announce connection recovery results. Include WhatsApp Web Plus 2026.10.19. Requires NVDA 2025.1 or later."
+msgstr "Menambahkan deskripsi stiker dengan pilihan penyedia AI, memperbaiki object review, dan mengumumkan hasil pemulihan koneksi. Menyertakan WhatsApp Web Plus 2026.10.19. Memerlukan NVDA 2025.1 atau yang lebih baru."

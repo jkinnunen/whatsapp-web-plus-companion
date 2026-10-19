@@ -2,21 +2,25 @@
 
 WhatsApp Companion brings WhatsApp Web Plus accessibility features to the Microsoft Store WhatsApp app. It is an NVDA add-on for WhatsApp Stable and WhatsApp Beta on Windows.
 
-You do not need Tampermonkey or any programming knowledge.
+You do not need Tampermonkey.
 
 ## Which version should I use?
 
-- **Microsoft Store app:** use WhatsApp Companion with NVDA.
-- **Browser:** use [WhatsApp Web Plus](https://github.com/muhammadGagah/whatsapp-web-plus) with Tampermonkey.
+**Microsoft Store app:** use WhatsApp Companion with NVDA.
+
+**Browser:** use [WhatsApp Web Plus](https://github.com/muhammadGagah/whatsapp-web-plus) with Tampermonkey.
 
 You can use both if you use WhatsApp in both places. Each installation is updated separately.
 
 ## What you need
 
-- Windows 10 or Windows 11
-- NVDA 2025.1 through NVDA 2026.2
-- WhatsApp Stable or WhatsApp Beta from Microsoft Store
-- The latest `whatsappWebPlusCompanion-<version>.nvda-addon` package
+Windows 10 or Windows 11
+
+NVDA 2025.1 through NVDA 2026.2
+
+WhatsApp Stable or WhatsApp Beta from Microsoft Store
+
+The latest `whatsappWebPlusCompanion-<version>.nvda-addon` package
 
 Run NVDA normally. The first-time permission repair may ask for administrator approval. Everyday use does not require administrator rights.
 
@@ -74,14 +78,74 @@ If these commands work, Companion is connected and ready to use. You can leave t
 
 Open **NVDA menu > Tools > WhatsApp Companion** to launch WhatsApp or manage Companion.
 
-- **Repeat a message:** choose **Report the last WhatsApp Companion result** if you missed a result or use NVDA speech On-demand mode.
-- **Close WhatsApp:** close it normally. If it stays running, use **Force close all Microsoft Store WhatsApp processes**. This can interrupt calls or transfers and lose unsent text.
-- **Read a full message:** focus a message and press `Alt + Shift + C` to open it in NVDA's reading window. Press `Escape` to close it.
-- **Change settings:** press `Shift + F8` inside WhatsApp.
+**Repeat a message:** choose **Report the last WhatsApp Companion result** if you missed a result or use NVDA speech On-demand mode.
+
+**Close WhatsApp:** close it normally. If it stays running, use **Force close all Microsoft Store WhatsApp processes**. This can interrupt calls or transfers and lose unsent text.
+
+**Read a full message:** focus a message and press `Alt + Shift + C` to open it in NVDA's reading window. Press `Escape` to close it.
+
+**Change settings:** press `Shift + F8` inside WhatsApp.
 
 ### Reading messages
 
 Alt+Shift+C opens unwrapped, read-only message text. Up and Down Arrow follow original message lines. Long lines scroll horizontally. Use **Copy message** for plain body text without the reader title or sent time. Use **Formatted view** for wrapped visual reading and clickable links. Escape closes the reader.
+
+### Reviewing messages with NVDA
+
+You can use NVDA's usual character, word, and line review commands on supported WhatsApp messages and controls while in Focus Mode. This helps when review used to say **blank** even though the message or button had a readable name. Use the commands for your NVDA keyboard layout.
+
+Companion uses the accessible message or control name when needed. This includes supported buttons and filter tabs, even when an unread count changes. It respects Privacy mode and keeps typing fields working normally. It does not cover every menu item or control.
+
+For a message with **Read more**, press `Shift+Enter` to expand it. The expanded text keeps its sender and time. Photo album captions are also read with the message details, preceded by **Caption:** or **Keterangan:**.
+
+### Navigating chats and menus
+
+`Alt+1` returns to the remembered chat in the chat list. Use the arrows to continue from there. When Escape closes a private chat, group, channel, or community announcement chat, NVDA announces **Chat is now closed**. Closing only a menu stays silent.
+
+**Keep message menus within the window** helps menus stay open in smaller windows. It is on by default and can be changed under **Shift+F8 > Accessibility**.
+
+### Following downloads
+
+When WhatsApp shows progress for a document download, NVDA announces the percentage at intervals. Downloads use numbered labels instead of reading filenames aloud. Focus does not move. A 100 percent announcement describes WhatsApp's transfer indicator, not confirmation that the file was saved.
+
+### Reading stickers with AI
+
+Read Sticker sends the sticker you choose to an AI provider for a short description. It is off by default and has no assigned shortcut. Providers appear as Gemini, Groq, Cloudflare Workers AI, then Custom, OpenAI-compatible.
+
+1. Open **Shift+F8 > Accessibility > Read Sticker** and enable it.
+2. Choose **Configure provider and API key**, select a provider, and enter its credentials. Custom also needs an HTTPS address and an image-capable model.
+3. Save your settings and assign **Read Sticker** in **Shortcut remapping**.
+4. Focus a sticker message or its sticker button, press the shortcut, and wait for the description.
+
+Only that sticker is sent when you use the shortcut. Moving within the same chat is allowed. Switching chats, language, or settings cancels the old request. Results are read once and do not replace message labels. AI descriptions may be inaccurate.
+
+Companion connects to the provider directly in the background. No browser extension or extra server is required. Keys are encrypted in the WhatsApp profile, separate from your browser profile. Leave the key field blank to keep a saved key. Clearing site data may remove it. Encryption does not protect the key from page scripts or malware. Saving settings does not test the provider.
+
+Animation uses a few sampled images and depends on WebView2 support. Brief changes may be missed. If only a still image can be read, the result says so. Unsupported images and requests that time out produce an error. See the [Read Sticker technical limits and validation guide](https://github.com/muhammadGagah/whatsapp-web-plus/blob/main/docs/read-sticker-validation.md) for details.
+
+### Using Gemini
+
+Open [Google AI Studio](https://aistudio.google.com/api-keys), sign in with your Google account, and complete the setup to get an API key. Copy the key, then open **Configure provider and API key** in Read Sticker settings. Select **Gemini**, paste the key into the API key field, and choose **Save**.
+
+### Using Cloudflare
+
+Open **Workers AI > Use REST API** in Cloudflare. Enter its **Account ID** and a **Workers AI API Token** in Read Sticker settings. R2 credentials are not used here.
+
+**Llama 3.2 11B Vision** is the default. You can edit **Model ID** using a full model name, such as `@cf/meta/llama-4-scout-17b-16e-instruct`. Choose a vision model that accepts messages with image data URLs. Llama 3.2 uses its own image format. Changing only the model keeps the saved token. Changing accounts requires a token for the new account.
+
+If the default Llama model needs agreement, read the linked terms and check both statements only if they apply to you. Choose **Agree and enable model**. Confirmed success closes the dialog and announces the result. Then use Read Sticker again. If confirmation does not arrive within 45 seconds, the dialog explains that the result is uncertain. Closing the dialog cannot undo an agreement already received by Cloudflare. Other model agreements are handled in Cloudflare.
+
+**Preview Cloudflare agreement** lets you repeat the steps for a tutorial without sending an agreement. Close it or press Escape to return to settings with your unsaved entries preserved. Provider charges and usage limits still apply to real sticker requests.
+
+### Automatic connection recovery
+
+If Companion loses its connection, it tries to reconnect. NVDA announces when recovery starts and whether it succeeds. If it fails, you will hear what to do next. If WhatsApp closes during recovery, Companion reports that it has stopped. Closing WhatsApp normally stays silent.
+
+These announcements describe the Companion connection. They do not confirm WhatsApp's internet connection or message delivery. Use **Report the last WhatsApp Companion result** if you miss a message.
+
+### Default settings
+
+Privacy mode, automatic new-message reading, Enter/Space voice playback, Clean Status, message-menu fitting, and Clean UI are on for a new installation. Total unread-chat announcements and Read Sticker are off. Updating keeps your saved choices.
 
 ### Call control labels
 
@@ -120,7 +184,7 @@ The reactions shortcut opens WhatsApp's reaction controls. Choose the reaction y
 
 ## Assigning shortcuts
 
-Choose **Shift+F8 > Shortcut remapping**, then select **Record voice message**, **Previous chat**, **Next chat**, **Start voice call**, or **Start video call**. Type a combination such as `Alt+C` or `Alt+V`, then choose **Save**. Use Ctrl or Alt, optionally Shift, followed by a letter, digit, punctuation key such as comma or period, F1–F12, or ArrowUp/Down/Left/Right. Letters refer to physical keyboard positions. Leave the field blank to disable an action. **Restore default** only changes the field. Choose Save to apply or Cancel/Escape to discard. Existing enabled/disabled remaps are preserved. New call shortcuts start unassigned. The recording default is Alt+M. Previous/next defaults are Alt+ArrowUp/Alt+ArrowDown, initially disabled.
+Choose **Shift+F8 > Shortcut remapping**, then select **Read Sticker**, **Record voice message**, **Previous chat**, **Next chat**, **Start voice call**, or **Start video call**. Type a combination such as `Alt+C` or `Alt+V`, then choose **Save**. Use Ctrl or Alt, optionally Shift, followed by a letter, digit, punctuation key such as comma or period, F1–F12, or ArrowUp/Down/Left/Right. Letters refer to physical keyboard positions. Leave the field blank to disable an action. **Restore default** only changes the field. Choose Save to apply or Cancel/Escape to discard. Existing enabled/disabled remaps are preserved. New call shortcuts start unassigned. The recording default is Alt+M. Previous/next defaults are Alt+ArrowUp/Alt+ArrowDown, initially disabled.
 
 Duplicate assignments and fixed script/Companion commands are rejected. Browser, system, NVDA, or extension shortcuts can still take priority. AltGr is not supported. Voice/video calls use the available button in the current conversation header, identified by its icon rather than translated text. No custom language string is required. Unavailable or ambiguous buttons are reported without starting a call.
 
@@ -159,7 +223,7 @@ These are defaults, not your saved remappings.
 | `Alt+Shift+C` | Open the focused message in the message reader |
 | `Shift+Enter` | Expand Read more in the focused message |
 | `Alt+F10` | Open formatting options for selected text in the editor |
-| `Enter / Space` | Play or pause the focused voice message when the optional keyboard playback setting is enabled (off by default) |
+| `Enter / Space` | Play or pause the focused voice message when the optional keyboard playback setting is enabled (on by default) |
 
 ### Settings and appearance
 
@@ -253,13 +317,19 @@ Use these shortcuts while call controls are available. The same key can have a d
 
 This updates the WhatsApp Web Plus copy used by Companion. To update the Companion add-on itself, install a newer `.nvda-addon` package. If you also use WhatsApp Web Plus in a browser, update that installation separately.
 
+The current source version is **2026.10.19**, including WhatsApp Web Plus **2026.10.19**. Read the [Companion release history](https://github.com/muhammadGagah/whatsapp-web-plus-companion/blob/main/changelog.md) for changes.
+
 ## Troubleshooting
 
-- **WhatsApp is already running:** close it completely, then launch it through Companion.
-- **WhatsApp cannot be found:** check that the selected Stable or Beta app is installed from Microsoft Store.
-- **WhatsApp opens but is not ready:** allow time for messages to load. If NVDA reports an error, use **Report the last WhatsApp Companion result** and note the exact message.
-- **Shortcuts do not work or the connection was lost:** close WhatsApp and launch it again from the Companion menu.
-- **WebView2 permission problem:** run **Diagnose and repair WebView2 policy permissions** again. If Windows policy or administrator restrictions block the repair, contact your administrator.
+**WhatsApp is already running:** close it completely, then launch it through Companion.
+
+**WhatsApp cannot be found:** check that the selected Stable or Beta app is installed from Microsoft Store.
+
+**WhatsApp opens but is not ready:** allow time for messages to load. If NVDA reports an error, use **Report the last WhatsApp Companion result** and note the exact message.
+
+**Shortcuts do not work or the connection was lost:** close WhatsApp and launch it again from the Companion menu.
+
+**WebView2 permission problem:** run **Diagnose and repair WebView2 policy permissions** again. If Windows policy or administrator restrictions block the repair, contact your administrator.
 
 Read the [detailed troubleshooting guide](https://github.com/muhammadGagah/whatsapp-web-plus-companion/blob/main/docs/detailed-guide.md#troubleshooting) for other messages and recovery steps.
 
@@ -267,10 +337,13 @@ Read the [detailed troubleshooting guide](https://github.com/muhammadGagah/whats
 
 These online guides are optional. You do not need them to complete installation.
 
-- [Companion menu commands](https://github.com/muhammadGagah/whatsapp-web-plus-companion/blob/main/docs/detailed-guide.md#whatsapp-companion-menu-commands)
-- [WebView2 permission repair details](https://github.com/muhammadGagah/whatsapp-web-plus-companion/blob/main/docs/detailed-guide.md#diagnose-and-repair-webview2-permissions)
-- [Privacy and security](https://github.com/muhammadGagah/whatsapp-web-plus-companion/blob/main/docs/detailed-guide.md#privacy-and-security)
-- [Developer guide](https://github.com/muhammadGagah/whatsapp-web-plus-companion/blob/main/docs/detailed-guide.md#for-developers)
+[Companion menu commands](https://github.com/muhammadGagah/whatsapp-web-plus-companion/blob/main/docs/detailed-guide.md#whatsapp-companion-menu-commands)
+
+[WebView2 permission repair details](https://github.com/muhammadGagah/whatsapp-web-plus-companion/blob/main/docs/detailed-guide.md#diagnose-and-repair-webview2-permissions)
+
+[Privacy and security](https://github.com/muhammadGagah/whatsapp-web-plus-companion/blob/main/docs/detailed-guide.md#privacy-and-security)
+
+[Developer guide](https://github.com/muhammadGagah/whatsapp-web-plus-companion/blob/main/docs/detailed-guide.md#for-developers)
 
 ## Remove WhatsApp Companion
 
