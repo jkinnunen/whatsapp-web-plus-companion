@@ -230,6 +230,42 @@ class PluginUiFlowTests(unittest.TestCase):
 			self.assertFalse(self.plugin._reportIfCurrent(self.plugin._generation - 1, progress))
 			feedback.assert_not_called()
 
+	def test_recovery_success_and_failure_are_spoken_and_saved(self) -> None:
+		from globalPlugins.whatsappWebPlusCompanion.models import OperationResult
+
+		for result, expected in (
+			(
+				OperationResult(True, "cdp.restored", "cdp.restored", {}),
+				"The WhatsApp Companion connection has been restored.",
+			),
+			(
+				OperationResult(False, "cdp.timeout", "cdp.timeout", {}),
+				"The WhatsApp Companion connection could not be restored. Close WhatsApp, then launch it again.",
+			),
+		):
+			self.plugin.lastResult = OperationResult(True, "attached", "active", {})
+			with mock.patch.object(self.module.commandFeedback, "message") as feedback:
+				self.assertFalse(self.plugin._reportIfCurrent(self.plugin._generation - 1, result))
+				feedback.assert_not_called()
+				self.assertTrue(self.plugin._reportIfCurrent(self.plugin._generation, result))
+				feedback.assert_called_once_with(expected)
+				self.assertIs(self.plugin.lastResult, result)
+
+	def test_closed_after_recovery_progress_announces_outcome_only_when_needed(self) -> None:
+		from globalPlugins.whatsappWebPlusCompanion.models import OperationResult
+
+		for recoveryReported in (False, True):
+			result = OperationResult(
+				True,
+				"package.closed",
+				"package.closed",
+				{"recoveryReported": recoveryReported},
+			)
+			with mock.patch.object(self.module.commandFeedback, "message") as feedback:
+				self.plugin._reportIfCurrent(self.plugin._generation, result)
+				self.assertEqual(feedback.call_count, int(recoveryReported))
+				self.assertIs(self.plugin.lastResult, result)
+
 	def test_process_probe_failures_never_offer_permission_repair(self) -> None:
 		from globalPlugins.whatsappWebPlusCompanion.models import LoaderError
 

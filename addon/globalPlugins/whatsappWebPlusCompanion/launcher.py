@@ -1,5 +1,6 @@
 import threading
 import time
+from .stickerTransport import StickerTransport
 from collections.abc import Callable
 from dataclasses import dataclass, replace
 
@@ -525,6 +526,8 @@ def launchOperation(
 	gateObserver("registry")
 	session: CdpSession | None = None
 	unregisterSession = _noopUnregister
+	stickerTransport = None
+	unregisterSticker = _noopUnregister
 	try:
 		io.remaining()
 		activateAumid(policy)
@@ -573,10 +576,13 @@ def launchOperation(
 			return OperationResult(True, "attached", "active", {"channel": channel.value})
 
 		announcementState = _AnnouncementState(securityEpoch=announcementGuard.snapshot()[1])
+		stickerTransport = StickerTransport()
+		unregisterSticker = registerCloser(stickerTransport.close)
 		nextTargetHealthCheck = time.monotonic() + _TARGET_HEALTH_INTERVAL
 		while not cancelEvent.wait(_ANNOUNCEMENT_POLL_INTERVAL):
 			try:
 				_forwardCompanionAnnouncements(session, announcementState, reportObserver, announcementGuard)
+				stickerTransport.pump(session)
 				now = time.monotonic()
 				if now >= nextTargetHealthCheck:
 					current = _discoverTarget(
@@ -623,9 +629,10 @@ def launchOperation(
 						True,
 						"package.closed",
 						"package.closed",
-						{"channel": channel.value},
+						{"channel": channel.value, "recoveryReported": recoveryReported},
 					)
 				reportRecovery()
+				stickerTransport.close()
 				session.close()
 				unregisterSession()
 
@@ -655,8 +662,15 @@ def launchOperation(
 				nextTargetHealthCheck = time.monotonic() + _TARGET_HEALTH_INTERVAL
 				gateObserver("pageReady")
 				setState(OperationState.ATTACHED)
+				if not cancelEvent.is_set():
+					reportObserver(
+						OperationResult(True, "cdp.restored", "cdp.restored", {"channel": channel.value}),
+					)
 		raise LoaderError("operation.cancelled")
 	finally:
+		if stickerTransport is not None:
+			stickerTransport.close()
+			unregisterSticker()
 		if session is not None:
 			session.close()
 			unregisterSession()

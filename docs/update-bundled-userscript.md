@@ -21,8 +21,8 @@ Use the same PowerShell terminal for all steps. All local paths below are exampl
 ```powershell
 $scriptRoot = 'D:\whatsapp\whatsapp-web-plus'
 $companionRoot = 'D:\whatsapp\whatsapp-web-plus-companion'
-$expectedVersion = '2.6.83'
-$expectedSequence = 2026092101
+$expectedVersion = '2026.10.19'
+$expectedSequence = 2026101901
 ```
 
 The download URLs in the next block are the official project URLs, not example local paths. A fork requires coordinated publishing and verification changes.

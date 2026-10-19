@@ -578,6 +578,12 @@ msgstr "Fix registry recovery cleanup and stop queued braille messages when disa
 msgid "Restoring the WhatsApp Companion connection. Please wait."
 msgstr "Restoring the WhatsApp Companion connection. Please wait."
 
-#. Release summary for WhatsApp Companion 2026.10.04.
-msgid "Improve connection recovery on busy systems, announce recovery progress, and preserve cancellation and timeout diagnostics. Requires NVDA 2025.1 or later."
-msgstr "Improve connection recovery on busy systems, announce recovery progress, and preserve cancellation and timeout diagnostics. Requires NVDA 2025.1 or later."
+msgid "The WhatsApp Companion connection has been restored."
+msgstr "The WhatsApp Companion connection has been restored."
+
+msgid "The WhatsApp Companion connection could not be restored. Close WhatsApp, then launch it again."
+msgstr "The WhatsApp Companion connection could not be restored. Close WhatsApp, then launch it again."
+
+#. Release summary for WhatsApp Companion 2026.10.19.
+msgid "Add sticker descriptions with configurable AI providers, improve object review, and announce connection recovery results. Include WhatsApp Web Plus 2026.10.19. Requires NVDA 2025.1 or later."
+msgstr "Add sticker descriptions with configurable AI providers, improve object review, and announce connection recovery results. Include WhatsApp Web Plus 2026.10.19. Requires NVDA 2025.1 or later."

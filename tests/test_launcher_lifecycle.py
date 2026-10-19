@@ -424,6 +424,7 @@ class LauncherLifecycleTests(unittest.TestCase):
 		session.close.assert_called_once()
 
 	def test_reconnect_keeps_the_discovered_target_paired_with_its_session(self) -> None:
+		reports = []
 		lease = MagicMock()
 		lease.owned = False
 		lease.acquire.side_effect = lambda: setattr(lease, "owned", True)
@@ -480,9 +481,15 @@ class LauncherLifecycleTests(unittest.TestCase):
 				side_effect=[None, LoaderError("cdp.closed")],
 			),
 		):
-			result = launcher.launchOperation(Channel.STABLE, _CancelEvent(), lambda _state: None)
+			result = launcher.launchOperation(
+				Channel.STABLE,
+				_CancelEvent(),
+				lambda _state: None,
+				reportObserver=reports.append,
+			)
 
 		self.assertEqual(result.messageKey, "package.closed")
+		self.assertEqual([result.messageKey for result in reports], ["cdp.recovering", "cdp.restored"])
 		self.assertEqual(discover.call_count, 2)
 		self.assertEqual(discover.call_args_list[0].args, (12345,))
 		self.assertEqual(discover.call_args_list[0].kwargs, {"io": ANY})

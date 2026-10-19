@@ -1,5 +1,31 @@
 # WhatsApp Companion changelog
 
+## 2026.10.19 - 2026-10-19
+
+Clean UI now recognizes the Indonesian desktop promotion description, so the promotion is hidden without a custom title.
+
+### NVDA review and connection feedback
+
+- Make empty-text message and chat cells readable through NVDA's standard character, word, and line review commands in Focus Mode.
+- Use complete accessible names for supported buttons, toggle buttons, and tabs, including changing unread counts and content-derived labels. Preserve native activation, states, usable cell text, and editable-field text handling.
+- Scope review overlays to the WhatsApp app module and respect privacy-masked accessible names.
+- Announce connection recovery success, failure, or app closure after recovery starts, rather than leaving users with only a restoring message. Preserve speech, braille, foreground, and cancellation guards.
+
+### Read Sticker and embedded userscript
+
+- Include WhatsApp Web Plus 2026.10.19 with Gemini, Groq, Cloudflare Workers AI, and Custom, OpenAI-compatible providers in that order.
+- Add bounded native HTTPS sticker transport without a browser extension or changes to the announcement bridge. Validate endpoints, payloads, deadlines, response limits, and cancellation.
+- Keep provider credentials encrypted in the WhatsApp profile. Changing Cloudflare models retains the token for the same account. Support Llama 3.2 image input and multimodal-message input for compatible alternative models.
+- Include explicit Llama 3.2 model agreement and local preview, with completion/timeout feedback and no automatic sticker resend.
+- Include menu fitting in small windows, download progress, photo album captions, Read more expansion, Alt+1 arrow-navigation fixes, and chat/channel/community closure announcements.
+- Update defaults: Privacy mode, automatic message reading, Enter/Space voice playback, Clean Status, menu fitting, and Clean UI on; total unread-chat announcements off. Existing settings are retained.
+
+### Documentation and validation
+
+- Refresh English and Indonesian help, document provider setup and limitations, and summarize object review and recovery results.
+- Add regression coverage for review overlays, native sticker transport, and recovery outcomes. Add-on packaging and installed-NVDA validation remain separate steps.
+- Align the embedded script with year.month.day version 2026.10.19, which compares higher than 2.6.91. Signed publishing remains a separate step and anti-rollback checks remain unchanged.
+
 ## 2026.10.04
 
 ### Connection recovery

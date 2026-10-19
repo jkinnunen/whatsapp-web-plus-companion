@@ -435,6 +435,8 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			# outcome for the on-demand report command without interrupting that focus announcement.
 			self.lastResult = result
 			self._resetCompanionDeliveryState()
+			if result.values.get("recoveryReported"):
+				commandFeedback.message(self._messageForResult(result))
 			return True
 		if result.messageKey == "cdp.recovering":
 			# Progress must not replace the last completed operation result.
@@ -603,6 +605,8 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			"The Companion is still cleaning up after the previous launch. Wait a moment and try again. If the problem continues, restart NVDA.",
 		)
 		messages = {
+			# Translators: Spoken and brailled after connection recovery and health verification succeed.
+			"cdp.restored": _("The WhatsApp Companion connection has been restored."),
 			# Translators: Spoken and brailled after the companion has loaded successfully.
 			"active": _("WhatsApp {channel} is running with WhatsApp Companion.").format(
 				channel=channel,
@@ -651,7 +655,9 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 				"The Companion cannot force close WhatsApp in this NVDA session. Unlock Windows and run NVDA normally, not as administrator.",
 			),
 			# Translators: Recovery message after renderer reconnection has failed.
-			"cdp.reconnect": _("The companion connection was lost. Close WhatsApp, then launch it again."),
+			"cdp.reconnect": _(
+				"The WhatsApp Companion connection could not be restored. Close WhatsApp, then launch it again.",
+			),
 			# Translators: Recovery message for locked, secure, read-only, or elevated NVDA contexts.
 			"security": _("Unlock Windows and run a normal, non-administrator copy of NVDA, then try again."),
 			# Translators: Recovery message when the selected Microsoft Store WhatsApp channel is unavailable.

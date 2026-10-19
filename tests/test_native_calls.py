@@ -215,6 +215,35 @@ class NativeCallAppModuleTests(unittest.TestCase):
 		self.assertEqual(module.AppModule.__bases__, (object,))
 		self.assertFalse(getattr(module.AppModule, "disableBrowseModeByDefault", False))
 
+	def test_message_overlay_preserves_builtin_selector_and_avoids_duplicates(self):
+		from test_message_review import Ia2Web, message, review
+
+		class BuiltinAppModule:
+			def chooseNVDAObjectOverlayClasses(self, obj, clsList):
+				obj.handledByBuiltin = True
+				if Ia2Web not in clsList:
+					clsList.append(Ia2Web)
+
+		builtin = types.SimpleNamespace(AppModule=BuiltinAppModule)
+		with patch.dict(
+			sys.modules,
+			{
+				"nvdaBuiltin.appModules.whatsapp_root": builtin,
+				"appModules.wwpMessageReview": review,
+			},
+		):
+			app = self._loadWhatsAppModule().AppModule()
+			obj = types.SimpleNamespace(**vars(message()))
+			classes = []
+			app.chooseNVDAObjectOverlayClasses(obj, classes)
+			app.chooseNVDAObjectOverlayClasses(obj, classes)
+			self.assertTrue(obj.handledByBuiltin)
+			self.assertEqual(classes, [review.MessageReview, Ia2Web])
+			obj.role = "button"
+			classes = []
+			app.chooseNVDAObjectOverlayClasses(obj, classes)
+			self.assertEqual(classes, [Ia2Web])
+
 	def test_missing_builtin_dependency_is_not_silently_ignored(self):
 		import builtins
 
